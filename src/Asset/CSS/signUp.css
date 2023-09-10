@@ -1,0 +1,36 @@
+.signUpCard{
+  
+  margin-left: 384px;
+}
+.sigbupbtn{
+  border-radius: 23px;
+}
+ /* .account_row{
+  margin-left:18px;
+} */
+.account_col{
+
+  border-color: #bbc4c0;
+  background-color: #e8f7f0;
+}
+/* .check_login{
+  text-align: center;
+}  */
+
+
+@media only screen and (min-width: 360px) {
+  .signUpCard{
+    margin-left: 0px;
+  }
+}
+
+@media only screen and (min-width: 768px){
+  .signUpCard{
+    margin-left: 88px;
+  }
+}
+@media only screen and (min-width: 576px){
+  .signUpCard{
+    margin-left: 88px;
+  }
+}
