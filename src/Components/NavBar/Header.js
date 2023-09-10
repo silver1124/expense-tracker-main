@@ -1,11 +1,23 @@
 import React from "react";
-import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import "../NavBar/Header.css";
+import { authAction } from "../../Store/index";
 
 const Header = () => {
   const isauth = useSelector((state) => state.isAuthenticated);
+  const authEmail = localStorage.getItem("email");
+  const dispatch = useDispatch();
+
+  const navigate = useNavigate();
+
+  async function handleLogout() {
+    await dispatch(authAction.logout());
+    navigate("/login");
+  }
+
   return (
-    <nav className="navbar navbar-expand-lg navbar-light bg-light">
+    <nav className="navbar navbar-expand-lg navbar-light bg-white navbar_header">
       <Link
         className="navbar-brand"
         to="/"
@@ -26,11 +38,13 @@ const Header = () => {
       </button>
       <div className="collapse navbar-collapse" id="navbarNav">
         <ul className="navbar-nav">
-          <li className="nav-item">
-            <Link className="nav-link" to="/home">
-              Home
-            </Link>
-          </li>
+          {isauth && (
+            <li className="nav-item">
+              <Link className="nav-link" to="/welcome">
+                Home
+              </Link>
+            </li>
+          )}
           {isauth && (
             <li className="nav-item">
               <Link className="nav-link" to="/products">
@@ -43,17 +57,40 @@ const Header = () => {
               About Us
             </Link>
           </li>
-          <li className="nav-item">
+        </ul>
+      </div>
+      {isauth && (
+        <div className="dropdown ">
+          <span
+            className="btn  dropdown-toggle"
+            type="button"
+            id="dropdownMenuButton"
+            data-toggle="dropdown"
+            aria-haspopup="true"
+            aria-expanded="false"
+            style={{ color: "rgb(30, 150, 247)" }}
+          >
+            <i className="fa fa-user" aria-hidden="true"></i>
+          </span>
+          <div
+            className="dropdown-menu animate__bounceIn"
+            aria-labelledby="dropdownMenuButton"
+            style={{ marginLeft: "-139px" }}
+          >
+            <div className="dropdown-item">
+              <h6>Welcome</h6>
+              <p>{authEmail}</p>
+            </div>
+
             {isauth && (
-              <Link className="nav-link " to="">
+              <Link className="dropdown-item" onClick={handleLogout}>
                 Logout
               </Link>
             )}
-          </li>
-        </ul>
-      </div>
+          </div>
+        </div>
+      )}
     </nav>
   );
 };
-
 export default Header;
