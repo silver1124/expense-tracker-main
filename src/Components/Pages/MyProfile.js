@@ -83,7 +83,7 @@ const MyProfile = () => {
                 Profile Photo URL
               </label>
               <input
-                type="file"
+                type="text"
                 id="photourl"
                 className="form-control"
                 placeholder="Profile Photo Url ..."

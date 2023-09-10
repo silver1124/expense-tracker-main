@@ -59,7 +59,7 @@ const SignUp = () => {
         localStorage.setItem("token", data.idToken);
         localStorage.setItem("email", data.email);
         dispatch(authAction.login());
-        history("/home");
+        history("/Welcome");
       })
       .catch((err) => {
         alert(err.message);
