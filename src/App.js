@@ -7,38 +7,37 @@ import MyProfile from "./Components/Pages/MyProfile";
 import Forgotpassword from "./Components/Pages/Forgotpassword";
 import Welcome from "./Components/Pages/Welcome";
 import MyExpense from "./Components/Pages/MyExpense";
+import "../src/Components/NavBar/Header.css";
+import "./App.css";
+
 // import { useEffect } from "react";
 
 function App() {
-  const isauth = useSelector((state) => state.isAuthentication);
-
-  // const dispatch = useDispatch();
-  // const navigate = useNavigate();
-  // const token = localStorage.getItem("token");
-  // useEffect(() => {
-  //   if (token) {
-  //     dispatch(authAction.login());
-  //   }
-  // }, []);
+  const isauth = useSelector((state) => state.auth.isAuthenticated);
+  const theme = useSelector((state) => state.theme.isDarkMode);
+  // console.log(isauth);
   return (
     <>
-      <Header />
-      <Routes>
-        <Route
-          path="/"
-          element={isauth ? <Navigate to="/welcome" /> : <SignUp />}
-        />
-        SignUp
-        {!isauth && <Route path="/welcome" element={<Welcome />} />}
-        <Route path="/login" element={<SignUp />} />
-        {!isauth && <Route path="/MyProfile" element={<MyProfile />} />}
-        {!isauth && <Route path="/my-expense" element={<MyExpense />} />}
-        <Route path="/about-us" element={<AboutUs />} />
-        {!isauth && (
-          <Route path="/Forgot-password" element={<Forgotpassword />} />
-        )}
-        <Route path="*" element="/"></Route>
-      </Routes>
+      <div className={theme ? "darkMode-theme-premium" : "App"}>
+        <Header />
+
+        <Routes>
+          <Route
+            path="/"
+            element={isauth ? <Navigate to="/welcome" /> : <SignUp />}
+          />
+          SignUp
+          {isauth && <Route path="/welcome" element={<Welcome />} />}
+          <Route path="/login" element={<SignUp />} />
+          {isauth && <Route path="/MyProfile" element={<MyProfile />} />}
+          {isauth && <Route path="/my-expense" element={<MyExpense />} />}
+          <Route path="/about-us" element={<AboutUs />} />
+          {isauth && (
+            <Route path="/Forgot-password" element={<Forgotpassword />} />
+          )}
+          <Route path="*" element="/"></Route>
+        </Routes>
+      </div>
     </>
   );
 }

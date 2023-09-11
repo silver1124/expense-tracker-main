@@ -3,11 +3,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import "../NavBar/Header.css";
 import { authAction } from "../../Store/index";
+import { toggelthemeAction } from "../../Store/themeSlice";
+
 const Header = () => {
-  const isauth = useSelector((state) => state.isAuthenticated);
+  const isauth = useSelector((state) => state.auth.isAuthenticated);
   const authEmail = localStorage.getItem("email");
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
   async function handleLogout() {
     await dispatch(authAction.logout());
     navigate("/login");
@@ -55,8 +58,9 @@ const Header = () => {
           </li>
         </ul>
       </div>
+
       {isauth && (
-        <div className="dropdown ">
+        <div className="dropdown my-2 my-sm-0  ">
           <span
             className="btn  dropdown-toggle"
             type="button"
@@ -85,6 +89,18 @@ const Header = () => {
           </div>
         </div>
       )}
+      <div>
+        {/* <button onClick={() => dispatch(toggelthemeAction.toggeltheme())}>
+          Change Mode
+        </button> */}
+        <label class="switch">
+          <input
+            type="checkbox"
+            onClick={() => dispatch(toggelthemeAction.toggeltheme())}
+          />
+          <span class="slider round"></span>
+        </label>
+      </div>
     </nav>
   );
 };
