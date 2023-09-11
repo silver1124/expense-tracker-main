@@ -3,19 +3,15 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import "../NavBar/Header.css";
 import { authAction } from "../../Store/index";
-
 const Header = () => {
   const isauth = useSelector((state) => state.isAuthenticated);
   const authEmail = localStorage.getItem("email");
   const dispatch = useDispatch();
-
   const navigate = useNavigate();
-
   async function handleLogout() {
     await dispatch(authAction.logout());
     navigate("/login");
   }
-
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-white navbar_header">
       <Link
@@ -47,8 +43,8 @@ const Header = () => {
           )}
           {isauth && (
             <li className="nav-item">
-              <Link className="nav-link" to="/products">
-                Products
+              <Link className="nav-link" to="/my-expense">
+                My Expenses
               </Link>
             </li>
           )}
@@ -81,7 +77,6 @@ const Header = () => {
               <h6>Welcome</h6>
               <p>{authEmail}</p>
             </div>
-
             {isauth && (
               <Link className="dropdown-item" onClick={handleLogout}>
                 Logout
