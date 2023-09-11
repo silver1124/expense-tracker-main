@@ -5,35 +5,31 @@ import { Link } from "react-router-dom";
 
 const Forgotpassword = () => {
   const [message, setMessage] = useState("");
-  const InputPasswordRef = useRef();
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
+  const InputEmailRef = useRef();
 
   const ChangePasswordHandler = (event) => {
     event.preventDefault();
-    const newPassword = InputPasswordRef.current.value;
-    console.log(newPassword);
-
+    const newEmail = InputEmailRef.current.value;
     const url = `https://identitytoolkit.googleapis.com/v1/accounts:update?key=AIzaSyDSWFv8wPRt3w95-Ssm_qAutPb3_WeS1IU`;
 
-    const data = {
-      idToken: token,
-      password: newPassword,
-      returnSecureToken: false,
-    };
-
-    console.log(data);
     fetch(url, {
       method: "POST",
-      body: JSON.stringify(data),
+      body: JSON.stringify({
+        requestType: "PASSWORD_RESET",
+        email: newEmail,
+      }),
       headers: {
         "Content-Type": "application/json",
       },
     }).then((res) => {
-      setMessage("Reset Your Password Sucessfully");
-      setTimeout(() => {
-        navigate("/login");
-      }, 1000);
+      return res.json().then((data) => {
+        setMessage("Email Send your Email Id Check your Email Address");
+        setTimeout(() => {
+          setMessage("");
+          navigate("/login");
+        }, 2000);
+      });
     });
   };
   return (
@@ -48,18 +44,18 @@ const Forgotpassword = () => {
       <form className="form" onSubmit={ChangePasswordHandler}>
         <div className="reset_pass animate__bounceIn">
           <div className="control">
-            <label htmlFor="pass">Reset Password</label>
+            <label htmlFor="pass">Enter Email Address</label>
             <input
-              type="password"
+              type="email"
               className="form-control"
-              id="pass"
-              placeholder="Reset Password .."
-              ref={InputPasswordRef}
+              id="email"
+              placeholder="Enter Email Address .."
+              ref={InputEmailRef}
               required
             />
           </div>
           <div className="action text-center">
-            <button className="btn btn-primary">Reset Password</button>
+            <button className="btn btn-primary">Send Link</button>
           </div>
 
           <div className="text-center mt-2">
@@ -73,5 +69,4 @@ const Forgotpassword = () => {
     </div>
   );
 };
-
 export default Forgotpassword;
