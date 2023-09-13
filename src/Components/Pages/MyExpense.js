@@ -1,20 +1,27 @@
 import React, { useEffect, useRef, useState } from "react";
 import "../Pages/MyExpense.css";
 import { useDispatch, useSelector } from "react-redux";
-import { MyExpenseAction } from "../../Store/MyExpenseSlice";
+import { MyExpenseAction, PrimiumAction } from "../../Store/MyExpenseSlice";
 import { getExpenseAction } from "../../Store/MyExpenseSlice";
-const MyExpense1 = () => {
+// import AsycCSV from "../CSV/AsycCSV";
+import { toggelthemeAction } from "../../Store/themeSlice";
+const MyExpense = () => {
   const InputDescriptionRef = useRef();
   const InputDateRef = useRef();
-  console.log(InputDateRef);
   const InputExpenseRef = useRef();
   const InputCategoryRef = useRef();
   const [expense, setExpense] = useState([]);
   const dispatch = useDispatch();
   const totalAmount = useSelector((state) => state.expense.totalAmount);
+  const askPremium = useSelector((state) => state.expense.Premium);
+  dispatch(PrimiumAction.askPremium(totalAmount));
   const emailID = localStorage.getItem("email");
   const replaceEmailid = emailID.replace("@", "").replace(".", "");
+
+  const exp = useSelector((state) => state.expense.expense);
+  const getdataAgain = useSelector((state) => state.expense.getdataAgain);
   //form submit handler
+
   const MyExpenseSubmitHandler = (event) => {
     event.preventDefault();
     const exprenseData = {
@@ -25,7 +32,12 @@ const MyExpense1 = () => {
       id: Math.random().toString(),
     };
     console.log(exprenseData);
-    dispatch(MyExpenseAction.addExpense(exprenseData));
+    dispatch(
+      MyExpenseAction.addExpense([
+        ...exp,
+        { exprenseData: exprenseData, id: Math.random().toString() },
+      ])
+    );
     if (
       !exprenseData.description ||
       !exprenseData.date ||
@@ -35,7 +47,7 @@ const MyExpense1 = () => {
       window.confirm("please provide each input feild value ");
     } else {
       fetch(
-        `https://expense-tracker-c3fba-default-rtdb.firebaseio.com/expense/${replaceEmailid}.json`,
+        `https://expensetrackernew-86302-default-rtdb.firebaseio.com/expense/${replaceEmailid}.json`,
         {
           method: "POST",
           body: JSON.stringify({
@@ -47,7 +59,9 @@ const MyExpense1 = () => {
         }
       )
         .then((res) => {
-          window.location.reload();
+          dispatch(MyExpenseAction.getdataAgain());
+          // return res.json();
+          // window.location.reload();
         })
         .then((data) => {
           console.log(data);
@@ -58,12 +72,11 @@ const MyExpense1 = () => {
         });
     }
   };
-
   //fetch(get) data and show in table
   useEffect(() => {
     const getData = async () => {
       const response = await fetch(
-        `https://expense-tracker-c3fba-default-rtdb.firebaseio.com/expense/${replaceEmailid}.json/`,
+        `https://expensetrackernew-86302-default-rtdb.firebaseio.com/expense/${replaceEmailid}.json/`,
         {
           method: "GET",
           headers: {
@@ -94,15 +107,14 @@ const MyExpense1 = () => {
       }
     };
     getData();
-  }, [dispatch, replaceEmailid]);
+  }, [dispatch, replaceEmailid, getdataAgain]);
 
   //delete data from table
   const DeleteExpenseHandler = async (id) => {
     try {
       if (window.confirm("Are you sure you want to delete this expense?")) {
-        console.log(id);
         await fetch(
-          `https://expense-tracker-c3fba-default-rtdb.firebaseio.com/expense/${replaceEmailid}/${id}.json/`,
+          `https://expensetrackernew-86302-default-rtdb.firebaseio.com/expense/${replaceEmailid}/${id}.json/`,
           {
             method: "DELETE",
             headers: {
@@ -111,8 +123,9 @@ const MyExpense1 = () => {
           }
         ).then((res) => {
           if (res.ok) {
-            window.location.reload();
-            console.log("deleted");
+            dispatch(MyExpenseAction.getdataAgain());
+            // window.location.reload();
+            // console.log("deleted");
           } else {
             console.log("error");
           }
@@ -123,12 +136,11 @@ const MyExpense1 = () => {
     }
   };
   // edit data from table
-
   const EditExpenseHandler = async (editexpense) => {
     console.log(editexpense);
     try {
       const res = await fetch(
-        `https://expense-tracker-c3fba-default-rtdb.firebaseio.com/expense/${replaceEmailid}/${editexpense.id}.json/`,
+        `https://expensetrackernew-86302-default-rtdb.firebaseio.com/expense/${replaceEmailid}/${editexpense.id}.json/`,
         {
           method: "DELETE",
           headers: {
@@ -137,7 +149,6 @@ const MyExpense1 = () => {
         }
       );
       const data = await res.json();
-
       if (res.ok) {
         InputExpenseRef.current.value = editexpense.exprenseData.amount;
         InputDescriptionRef.current.value =
@@ -151,7 +162,7 @@ const MyExpense1 = () => {
       console.log(error.message);
     }
   };
-
+  //"ask primimum"
   return (
     <div className="container">
       <div className="row mt-4">
@@ -168,6 +179,21 @@ const MyExpense1 = () => {
             </div>
           </div>
         </div>
+        {/* primimum */}
+        {askPremium && (
+          <div className="col-md-4 ">
+            <div className="card ">
+              <div className="card-body bg-primary border border-primary rounded cardExpenseBtn">
+                <button
+                  className=" btn bg-white border border-primary font-weight-bold"
+                  onClick={() => dispatch(toggelthemeAction.toggeltheme())}
+                >
+                  Action Premium
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
         {/* model */}
         <div
           className="modal fade"
@@ -208,7 +234,6 @@ const MyExpense1 = () => {
                       ref={InputDateRef}
                     />
                   </div>
-
                   <div className="form-group font-weight-bold">
                     <label htmlFor="expense">Amount</label>
                     <input
@@ -219,7 +244,6 @@ const MyExpense1 = () => {
                       ref={InputExpenseRef}
                     />
                   </div>
-
                   <div className="form-group font-weight-bold">
                     <label htmlFor="des">Description</label>
                     <input
@@ -230,7 +254,6 @@ const MyExpense1 = () => {
                       ref={InputDescriptionRef}
                     />
                   </div>
-
                   <div classhtml="form-group">
                     <label htmlFor="category " className="font-weight-bold">
                       Category
@@ -249,7 +272,6 @@ const MyExpense1 = () => {
                       <option value="others">Others</option>
                     </select>
                   </div>
-
                   <div className="modal-footer">
                     <button
                       type="button"
@@ -258,7 +280,6 @@ const MyExpense1 = () => {
                     >
                       Close
                     </button>
-
                     <button type="submit" className="btn btn-primary">
                       Add Expense
                     </button>
@@ -268,9 +289,11 @@ const MyExpense1 = () => {
             </div>
           </div>
         </div>
+        {/* table */}
         <div className="table-responsive ">
+          {/* <AsycCSV /> */}
           <table
-            className="table table-striped table-bordered table-hover Expensetable table-lg mt-5"
+            className="table table-striped table-bordered table-hover Expensetable table-lg mt-3"
             id="expenseTable"
           >
             <thead className="table-dark">
@@ -305,13 +328,13 @@ const MyExpense1 = () => {
                         data-target="#exampleModalCenter"
                         onClick={() => EditExpenseHandler(Expense)}
                       >
-                        <i class="fa fa-pencil" aria-hidden="true"></i>
+                        <i className="fa fa-pencil" aria-hidden="true"></i>
                       </button>
                       <button
                         className=" btn bg-white border border-primary font-weight-bold ml-2"
                         onClick={() => DeleteExpenseHandler(Expense.id)}
                       >
-                        <i class="fa fa-trash" aria-hidden="true"></i>
+                        <i className="fa fa-trash" aria-hidden="true"></i>
                       </button>
                     </td>
                   </tr>
@@ -319,7 +342,7 @@ const MyExpense1 = () => {
               })}
               <tr>
                 <th colSpan="4">Subtotal</th>
-                <th>{totalAmount}</th>
+                <th>₹ {totalAmount}</th>
               </tr>
             </tbody>
           </table>
@@ -328,5 +351,4 @@ const MyExpense1 = () => {
     </div>
   );
 };
-
-export default MyExpense1;
+export default MyExpense;
