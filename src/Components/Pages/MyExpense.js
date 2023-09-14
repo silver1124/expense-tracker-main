@@ -3,7 +3,7 @@ import "../Pages/MyExpense.css";
 import { useDispatch, useSelector } from "react-redux";
 import { MyExpenseAction, PrimiumAction } from "../../Store/MyExpenseSlice";
 import { getExpenseAction } from "../../Store/MyExpenseSlice";
-// import AsycCSV from "../CSV/AsycCSV";
+import AsycCSV from "../CSV/AsycCSV";
 import { toggelthemeAction } from "../../Store/themeSlice";
 const MyExpense = () => {
   const InputDescriptionRef = useRef();
@@ -291,7 +291,7 @@ const MyExpense = () => {
         </div>
         {/* table */}
         <div className="table-responsive ">
-          {/* <AsycCSV /> */}
+          <AsycCSV />
           <table
             className="table table-striped table-bordered table-hover Expensetable table-lg mt-3"
             id="expenseTable"
