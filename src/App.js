@@ -9,6 +9,7 @@ import Welcome from "./Components/Pages/Welcome";
 import MyExpense from "./Components/Pages/MyExpense";
 import "../src/Components/NavBar/Header.css";
 import "./App.css";
+import Greeting from "./Components/Testing/Greeting";
 
 // import { useEffect } from "react";
 
@@ -37,6 +38,8 @@ function App() {
           )}
           <Route path="*" element="/"></Route>
         </Routes>
+        {/* this is for testing  */}
+        <Greeting />
       </div>
     </>
   );
